@@ -1,0 +1,104 @@
+practica 1
+
+sudo dnf install gnupg
+mkdir -p
+cd 
+sudo nano
+sudo gpg2 --symnetric 
+ls
+rm 
+cat
+sudo gpg --decrypt practice.gpg
+sudo  -d practice.gpg
+sudo gpg --output practice.gpg --decrypt practice.gpg
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+practica2
+
+sudo dnf install sshd 
+sudo dnf install http 
+sudo dnd install vsftpd 
+
+sudo dnf systemctl enable sshd
+sudo dnf systemctl enable httpd
+sudo dnf systemctl enable vsftpd
+
+sudo dnf systemctl start sshd
+sudo dnf systemctl start httpd
+sudo dnf systemctl start vsftpd
+
+sudo dnf systemctl status sshd
+sudo dnf systemctl status httpd
+sudo dnf systemctl status vsftpd
+
+sudo iptables -A INPUT -p tcp --dport=21 -j DROP
+sudo iptables -A INPUT -p tcp --dport=22 -j DROP
+sudo iptables -A INPUT -p tcp --dport=80 -j DROP
+ 
+sudo iptables -D INPUT -p tcp --dport=21 -j DROP
+sudo iptables -D INPUT -p tcp --dport=22 -j DROP
+sudo iptables -D INPUT -p tcp --dport=80 -j DROP
+
+
+sudo firewall-cmd --permanent --remove-port=21/tcp
+sudo firewall-cmd --permanent --remove-port=22/tcp
+sudo firewall-cmd --permanent --remove-port=80/tcp
+sudo firewall-cmd --reload
+sudo firewall-cmd --list-ports
+
+
+sudo firewall-cmd --permanent --add-port=21/tcp
+sudo firewall-cmd --permanent --add-port=80/tcp
+sudo firewall-cmd --permanent --add-port=22/tcp
+sudo firewall-cmd --reload
+sudo firewall-cmd --list-ports
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+practica 3
+
+sudo dnf instal suricata
+sudo su
+cd /var/lib/suricata/
+mkdir -p rules
+cd rules
+sudo nano myrules
+cd
+nano /etc/suricata/suricata.yaml
+sudo systemctl enable suricata
+sudo systemctl start suricata
+sudo tail -f /var/log/suricata/fast.log
+sudo suricata -c /etc/suricata/suricata.yaml -i ens160
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+practica4
+
+sudo dnf install -y epel-release
+sudo dnf install -y google-authenticator qrencode
+ls /usr/lib64/security/pam_google_authenticator.so
+sudo dnf install -y google-authenticator
+sudo nano /etc/pam.d/sshd
+auth required /usr/lib64/security/pam_google_authenticator.so
+sudo nano /etc/ssh/sshd_config
+
+# Habilitar autenticación interactiva (necesaria para 2FA)
+ChallengeResponseAuthentication yes
+
+# Habilitar el método keyboard-interactive (es el que usa PAM)
+KbdInteractiveAuthentication yes
+
+# Permitir la autenticación por contraseña (si deseas usarla junto con 2FA)
+PasswordAuthentication yes
+
+# Asegurarse de que se usa PAM para la autenticación
+UsePAM yes
+
+AuthenticationMethods publickey,password publickey,keyboard-interactive
+
+sudo systemctl restart sshd
+sudo systemctl status sshd
+google-authenticator
+ls -l ~/.google_authenticator
+chmod 600 ~/.google_authenticator
+ssh yonill@192.168.100.170
