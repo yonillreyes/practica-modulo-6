@@ -1,104 +1,479 @@
+Practica 1 - Cifrado 1pts
+
+Descargue la herramiente gpg2, instalarla y configurarla 
+Cree un directorio, y dentro un archivo y cifrelo utilizando gpg2
+Intente acceder al archivo cifrado
+Luego decifre el archivo y muestre el contenido del mismo
+Practica 2 - IP tables - UFW/Firewall-cmd 1pts
+
+Habilite los servicios de http, ftp y ssh en el servidor, muentre ambos servicios funcionando de manera correcta
+Utilizando IP tables bloquee el trafico del puerto 80, 21 y 22 para bloquear las conexiones hacia ambos servicios muestre los resultados
+Utilizando IP tables habilite nuevamente el trafico del puerto 80, 21 y 22 para permitir las conexiones hacia ambos servicios
+Utilizando ufw (si su distro es basada en debian) o firewall-cmd (si su distro esta basada en Red Hat) bloquee el trafico del puerto 80,21 y 22 para bloquear las conexiones hacia ambos servicios
+Habilite nuevamente el trafico del puerto 80, 21 y 22 para permitir las conexiones hacia ambos servicios.
+Practica 3 -Instalacion de IDS snort 1pts
+Descargue e instale el  IDS snort (Apoyese de la documentacion oficial)
+luego de instalado, cree las siguientes reglas de deteccion de trafico:
+Detectar todo el trafico ICMP (Ping) hacia el host
+Detectar todo el trafico hacia el puerto 21/tcp de ese host
+Detectar todo el trafico hacia el puerto 22/tcp de ese host
+Detectar todo el trafico hacia el puerto 80/tcp de ese host
+Ejecute el IDS, Realize las pruebas desde su maquina host, y muestre como son detectadas por el IDS 
+Practica 4: Configurar 2FA con google authenticator Modulo PAM para Acceso SSH
+
+Instale y Configure Google Authenticator para el usuario que se utilizara para acceder via SSH
+Configure PAM para usar Google Authenticator
+Configure SSH para solicitar 2FA 
+Realize la demostraccion accediendo desde asu Maquina host hasta tu VM (si es exitoso, se te pedirá: Contraseña Código de Google Authenticator, ingrese los datos y el codigo enviado y acceda)
+
+
+
+
+
+
+
 practica 1
 
-sudo dnf install gnupg
-mkdir -p
-cd 
-sudo nano
-sudo gpg2 --symnetric 
-ls
-rm 
-cat
-sudo gpg --decrypt practice.gpg
-sudo  -d practice.gpg
-sudo gpg --output practice.gpg --decrypt practice.gpg
 
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------
+aso 1: Instalación y configuración de GPG2
+¿Qué es GPG?
 
-practica2
-
-sudo dnf install sshd 
-sudo dnf install http 
-sudo dnd install vsftpd 
-
-sudo dnf systemctl enable sshd
-sudo dnf systemctl enable httpd
-sudo dnf systemctl enable vsftpd
-
-sudo dnf systemctl start sshd
-sudo dnf systemctl start httpd
-sudo dnf systemctl start vsftpd
-
-sudo dnf systemctl status sshd
-sudo dnf systemctl status httpd
-sudo dnf systemctl status vsftpd
-
-sudo iptables -A INPUT -p tcp --dport=21 -j DROP
-sudo iptables -A INPUT -p tcp --dport=22 -j DROP
-sudo iptables -A INPUT -p tcp --dport=80 -j DROP
- 
-sudo iptables -D INPUT -p tcp --dport=21 -j DROP
-sudo iptables -D INPUT -p tcp --dport=22 -j DROP
-sudo iptables -D INPUT -p tcp --dport=80 -j DROP
+GPG (GNU Privacy Guard) es una herramienta de cifrado que implementa el estándar OpenPGP. Permite cifrar y firmar datos y comunicaciones, garantizando la confidencialidad e integridad de la información.​
 
 
-sudo firewall-cmd --permanent --remove-port=21/tcp
-sudo firewall-cmd --permanent --remove-port=22/tcp
-sudo firewall-cmd --permanent --remove-port=80/tcp
+Instalación en Oracle Linux:
+
+Oracle Linux, al estar basado en Red Hat Enterprise Linux (RHEL), utiliza el gestor de paquetes dnf o yum. Para instalar GPG2, puedes ejecutar:​
+yum.oracle.com
+
+sudo dnf install gnupg2
+
+
+📁 Paso 2: Crear un directorio y un archivo para cifrar
+Creación del directorio:
+
+
+mkdir ~/cifrado_practica
+cd ~/cifrado_practica
+
+
+Creación del archivo:
+
+echo "Este es un archivo secreto." > secreto.txt
+
+Ahora tienes un archivo llamado secreto.txt con contenido que deseas proteger.​
+
+
+
+🔐 Paso 3: Cifrar el archivo utilizando GPG2
+
+Cifrado simétrico:
+
+El cifrado simétrico utiliza una sola contraseña para cifrar y descifrar. Para cifrar el archivo:​
+Medium
+
+
+gpg2 -c secreto.txt
+
+
+Se te pedirá que ingreses una contraseña. Después de confirmar, se generará un archivo llamado secreto.txt.gpg.​
+
+¿Qué ocurre aquí?
+
+GPG utiliza la contraseña proporcionada para cifrar el contenido de secreto.txt, creando un archivo cifrado que solo puede ser descifrado con la misma contraseña.​
+
+
+
+
+🚫 Paso 4: Intentar acceder al archivo cifrado
+Si intentas abrir secreto.txt.gpg con un editor de texto o visualizar su contenido directamente:​
+
+
+cat secreto.txt.gpg
+
+
+
+Verás una serie de caracteres ilegibles. Esto se debe a que el contenido está cifrado y no puede ser interpretado sin la contraseña correcta.​
+
+🔓 Paso 5: Descifrar el archivo y mostrar su contenido
+Descifrado del archivo:
+
+
+gpg2 -d secreto.txt.gpg
+
+
+Se te pedirá la contraseña que usaste para cifrar el archivo. Después de ingresarla correctamente, el contenido original del archivo se mostrará en la terminal.​
+
+
+¿Qué sucede aquí?
+
+GPG utiliza la contraseña proporcionada para descifrar el contenido de secreto.txt.gpg, devolviendo el texto original.
+
+
+podemos obtener el texto descifrado completamente sobreescribiendo con:
+
+sudo gpg --output secreto.txt  --decrypt secreto.txt.gpg
+
+--------------------------------------------------------------------------
+
+
+practica 2
+
+
+
+Instalar, Habilitar y arrancar los servicios:
+
+sudo dnf install -y openssh-server
+sudo dnf install http -y
+sudo dnf install vsftpd -y
+
+sudo systemctl enable --now vsftpd
+sudo systemctl enable --now httpd
+sudo systemctl enable --now sshd
+
+sudo systemctl start vsftpd
+sudo systemctl start httpd
+sudo systemctl start sshd
+
+
+
+después ponemos los servicios al firewall(por defecto habilitara los puertos):
+
+
+sudo firewall-cmd --zone=public --add-service=ssh --permanent
 sudo firewall-cmd --reload
-sudo firewall-cmd --list-ports
 
-
-sudo firewall-cmd --permanent --add-port=21/tcp
-sudo firewall-cmd --permanent --add-port=80/tcp
-sudo firewall-cmd --permanent --add-port=22/tcp
+sudo firewall-cmd --permanent --add-service=http
 sudo firewall-cmd --reload
-sudo firewall-cmd --list-ports
-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-practica 3
+sudo firewall-cmd --zone=public --add-service=ftp --permanent
+sudo firewall-cmd --reload
 
-sudo dnf instal suricata
-sudo su
-cd /var/lib/suricata/
-mkdir -p rules
-cd rules
-sudo nano myrules
-cd
-nano /etc/suricata/suricata.yaml
-sudo systemctl enable suricata
-sudo systemctl start suricata
+
+
+
+Bloquear los puertos con iptables:
+
+sudo iptables -A INPUT -p tcp --dport 21 -j DROP
+sudo iptables -A INPUT -p tcp --dport 22 -j DROP
+sudo iptables -A INPUT -p tcp --dport 80 -j DROP
+
+
+Mostrar las reglas:
+
+sudo iptables -L INPUT -n --line-numbers
+
+
+Probar que están caidos:
+
+esto lo vamos hacer atravez de entrar a la pagina web de http, entrando a la cmd y intentando entrar por ssh y por ftp si todo salió bien deberían de estar caidos.
+
+
+Desbloquiar los puertos con iptables:
+
+sudo iptables -D INPUT -p tcp --dport 21 -j DROP
+sudo iptables -D INPUT -p tcp --dport 22 -j DROP
+sudo iptables -D INPUT -p tcp --dport 80 -j DROP
+
+Verificamso ue ya no están:
+sudo iptables -L INPUT -n
+
+
+Comprobamos que están levantados con:
+
+entrar a los servicios y ver si todo esta corriendo perfectamente.
+
+
+
+
+Ahora tenemos que hacer lo mismo con el FIREWALL(firewall-cmd):
+
+bloquear puertos:
+
+sudo firewall-cmd --zone=public --permanent --remove-port=21/tcp
+sudo firewall-cmd --zone=public --permanent --remove-port=22/tcp
+sudo firewall-cmd --zone=public --permanent --remove-port=80/tcp
+sudo firewall-cmd --reload
+
+
+ver que no están en la lista de puertos con:
+
+sudo firewall-cmd --zone=public --list-ports
+
+
+Provamos los servicios:
+
+entrando a los servicios y tienen que estar caidos.
+
+
+Permitimos los puertos de nuevo:
+
+sudo firewall-cmd --zone=public --permanent --add-port=21/tcp
+sudo firewall-cmd --zone=public --permanent --add-port=22/tcp
+sudo firewall-cmd --zone=public --permanent --add-port=80/tcp
+sudo firewall-cmd --reload
+
+
+Y revisamos que ahora si esten en la lista:
+
+sudo firewall-cmd --zone=public --list-ports
+
+
+
+
+--------------------------------------------------------------------------
+
+practica 3:
+
+Paso 1: Instalación de Suricata en Oracle Linux 8/9
+1.1. Instalar repositorios necesarios
+
+.sudo dnf install epel-release dnf-plugins-core -y
+
+
+
+1.2. Habilitar el repositorio de Suricata
+
+.sudo dnf copr enable @oisf/suricata-7.0 -y
+
+
+
+1.3. Instalar Suricata
+
+.sudo dnf install suricata -y
+
+
+
+1.4. Verificar la instalación
+
+.suricata --build-info
+
+Este comando mostrará información sobre la versión y características de Suricata.
+
+
+
+📁 Paso 2: Crear el archivo local.rules
+
+
+Crear el directorio de reglas si no existe:
+
+sudo mkdir -p /etc/suricata/rules
+
+
+
+Crear el archivo local.rules:
+
+sudo nano /etc/suricata/rules/local.rules
+
+
+
+adentro de local rules agregar:
+
+# Detectar tráfico ICMP (Ping)
+alert icmp any any -> $HOME_NET any (msg:"ICMP Ping detectado"; sid:1000001; rev:1;)
+
+# Detectar tráfico hacia el puerto 21/tcp (FTP)
+alert tcp any any -> $HOME_NET 21 (msg:"Tráfico hacia puerto 21 detectado"; sid:1000002; rev:1;)
+
+# Detectar tráfico hacia el puerto 22/tcp (SSH)
+alert tcp any any -> $HOME_NET 22 (msg:"Tráfico hacia puerto 22 detectado"; sid:1000003; rev:1;)
+
+# Detectar tráfico hacia el puerto 80/tcp (HTTP)
+alert tcp any any -> $HOME_NET 80 (msg:"Tráfico hacia puerto 80 detectado"; sid:1000004; rev:1;)
+
+
+
+
+ Paso 3: Configurar Suricata para cargar local.rules
+
+Editar el archivo de configuración suricata.yaml:
+
+sudo vi /etc/suricata/suricata.yaml
+
+
+con vi Buscar la sección rule-files: y asegurarte de que incluya local.rules:
+
+default-rule-path: /var/lib/suricata/rules
+
+rule-files:
+  - suricata.rules
+  - /etc/suricata/rules/local.rules
+
+
+Esto indica a Suricata que cargue las reglas predeterminadas y tus reglas personalizadas, (Cerrar y guardar el archivo).
+
+
+
+ Paso 4: Verificar la configuración
+
+Antes de iniciar Suricata, es recomendable verificar que la configuración sea válida:​
+
+sudo suricata-update
+sudo suricata -T -c /etc/suricata/suricata.yaml -v
+
+Si todo está correcto, verás un mensaje indicando que la prueba fue exitosa.
+
+
+
+
+
+Paso 5: Ejecutar Suricata
+Identifica la interfaz de red que utiliza tu sistema (por ejemplo, eth0, ens33, etc.):​
+
+ip link show
+
+
+Luego, ejecuta Suricata en modo IDS:​
+
+sudo suricata -c /etc/suricata/suricata.yaml -i <INTERFAZ>
+
+Reemplaza <INTERFAZ> con el nombre de tu interfaz de red.
+
+
+
+Paso 6: Realizar pruebas de detección:
+
+ping
+entrar por ssh
+probar ftp
+probar http
+
+
+
+ Paso 7: Verificar alertas generadas:
+
+Suricata registra las alertas en el archivo /var/log/suricata/fast.log. 
+
+Para ver las alertas generadas:​
+
 sudo tail -f /var/log/suricata/fast.log
-sudo suricata -c /etc/suricata/suricata.yaml -i ens160
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------
-practica4
 
-sudo dnf install -y epel-release
-sudo dnf install -y google-authenticator qrencode
-ls /usr/lib64/security/pam_google_authenticator.so
-sudo dnf install -y google-authenticator
+tiene que salir las alertas
+
+
+---------------------------------------------------------------------------
+
+practica 4:
+
+
+
+ 🧩 Instalar Google Authenticator
+Primero, instala el módulo PAM de Google Authenticator y las bibliotecas necesarias:​
+
+
+sudo dnf install epel-release -y
+sudo dnf install google-authenticator qrencode-libs -y
+
+
+Esto instalará el módulo de autenticación y las bibliotecas para generar códigos QR.​
+
+
+
+
+
+2. 🔐 Configurar Google Authenticator para el Usuario
+Ejecuta el siguiente comando con el usuario que utilizarás para acceder vía SSH:​
+
+
+
+google-authenticator
+Durante la configuración, se te harán varias preguntas. Responde de la siguiente manera:​
+
+¿Desea que las tokens de autenticación se basen en el tiempo? (y/n): y
+
+¿Desea actualizar el archivo ~/.google_authenticator? (y/n): y
+
+¿Desea deshabilitar múltiples usos del mismo token? (y/n): y
+
+¿Desea aumentar la ventana de tiempo para permitir una mayor desviación horaria? (y/n): y
+
+¿Desea habilitar códigos de emergencia? (y/n): y​
+turbogeek.co.uk
+
+Se generará un código QR y una clave secreta. Escanea el código QR con la aplicación Google Authenticator en tu dispositivo móvil o ingresa la clave manualmente.​
+
+
+
+
+3. ⚙️ Configurar PAM para Usar Google Authenticator
+
+Edita el archivo de configuración de PAM para SSH:​
+
 sudo nano /etc/pam.d/sshd
-auth required /usr/lib64/security/pam_google_authenticator.so
+
+
+Agrega la siguiente línea al final del archivo:​
+
+auth required pam_google_authenticator.so nullok
+
+
+La opción nullok permite que los usuarios sin un archivo .google_authenticator puedan iniciar sesión sin ser solicitados para ingresar un código de verificación.​
+
+Guarda y cierra el archivo.​
+
+4. 🔧 Configurar SSH para Solicitar 2FA
+Edita el archivo de configuración del servidor SSH:​
+
 sudo nano /etc/ssh/sshd_config
 
-# Habilitar autenticación interactiva (necesaria para 2FA)
+
+Busca y modifica las siguientes líneas:​
+
 ChallengeResponseAuthentication yes
-
-# Habilitar el método keyboard-interactive (es el que usa PAM)
-KbdInteractiveAuthentication yes
-
-# Permitir la autenticación por contraseña (si deseas usarla junto con 2FA)
-PasswordAuthentication yes
-
-# Asegurarse de que se usa PAM para la autenticación
 UsePAM yes
 
-AuthenticationMethods publickey,password publickey,keyboard-interactive
+
+Asegúrate de que PasswordAuthentication esté configurado según tus necesidades.​
+
+Guarda y cierra el archivo.​
+
+Reinicia el servicio SSH para aplicar los cambios:​
 
 sudo systemctl restart sshd
-sudo systemctl status sshd
-google-authenticator
-ls -l ~/.google_authenticator
+
+
+
+5. 🧪 Probar la Autenticación 2FA
+Desde tu máquina host, intenta conectarte al servidor vía SSH:​
+
+ssh usuario@ip_del_servidor
+
+
+
+
+Se te solicitará:​
+
+La contraseña del usuario.
+
+
+
+
+El código de verificación de 6 dígitos generado por la aplicación Google Authenticator.​
+
+Si ambos son correctos, se establecerá la conexión.​
+
+🧠 Consideraciones Finales
+Asegúrate de que el archivo .google_authenticator exista en el directorio home del usuario.
+
+Verifica que los permisos del archivo sean correctos:​
+
 chmod 600 ~/.google_authenticator
-ssh yonill@192.168.100.170
+
+
+
+
+Si experimentas problemas, revisa los registros del sistema para obtener información adicional:​
+
+sudo journalctl -xe
+
+
+
+
+
+
+
+
+
+
